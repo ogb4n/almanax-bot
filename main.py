@@ -29,38 +29,39 @@ async def on_ready():
             print('Slash commands not synced')
     except Exception as e:
         print(f'Error while syncing slash commands: {e}')
-    almanax_retrieve.start()
+    # almanax_retrieve.start()
 
 
-@tasks.loop(hours=15)
-async def almanax_retrieve():
-        await bot.wait_until_ready()
-        channel = bot.get_channel(int(CHANNEL_ID)) # The channel id that we want the bot to send message
-        print('Background task started')
-        print('------')
-        while not bot.is_closed():
-            img_options = {
-                'format': 'jpg',
-                'encoding': "UTF-8",
-                'crop-w': '455',
-                'crop-h': '250',
-                'crop-x': '250',
-                'crop-y': '455',
-                'user-style-sheet': 'hide.css'
-            }
-            img_path = f'almanax-{date.today().strftime("%d-%m-%Y")}.jpg'
-            imgkit.from_url('http://www.krosmoz.com/fr/almanax', img_path, options=img_options)
+# @tasks.loop(hours=15)
+# async def almanax_retrieve():
+#         await bot.wait_until_ready()
+#         channel = bot.get_channel(int(CHANNEL_ID)) # The channel id that we want the bot to send message
+#         print('Background task started')
+#         print('------')
+#         while not bot.is_closed():
+#             img_options = {
+#                 'format': 'jpg',
+#                 'encoding': "UTF-8",
+#                 'crop-w': '455',
+#                 'crop-h': '250',
+#                 'crop-x': '250',
+#                 'crop-y': '455',
+#                 'user-style-sheet': 'hide.css'
+#             }
+#             img_path = f'almanax-{date.today().strftime("%d-%m-%Y")}.jpg'
+#             imgkit.from_url('http://www.krosmoz.com/fr/almanax', img_path, options=img_options)
 
-            # Send image to Discord
-            print('Send a new Almanax day')
-            file = discord.File(img_path)
-            await channel.send(file=file)
+#             # Send image to Discord
+#             print('Send a new Almanax day')
+#             file = discord.File(img_path)
+#             await channel.send(file=file)
 
-            # Delete img file
-            os.remove(img_path)
+#             # Delete img file
+#             os.remove(img_path)
 
 @bot.tree.command(name='almanax',description="Vois l'offrande et le bonus du jour")
 async def almanax(interaction: discord.Interaction):
+        await interaction.response.defer()
         channel = bot.get_channel(int(CHANNEL_ID)) # The channel id that we want the bot to send message
 
         img_options = {
@@ -78,7 +79,7 @@ async def almanax(interaction: discord.Interaction):
         # Send image to Discord
         print('Send a new Almanax day')
         file = discord.File(img_path)
-        await channel.send(file=file)
+        await interaction.followup.send("Voici l'Almanax du jour 👌✨:", file=file)
 
         # Delete img file
         os.remove(img_path)
